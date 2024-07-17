@@ -52,7 +52,7 @@ class BitbucketServerProvider(GitProvider):
         try:
             url = (f"{self.bitbucket_server_url}/projects/{self.workspace_slug}/repos/{self.repo_slug}/src/"
                    f"{self.pr.destination_branch}/.pr_agent.toml")
-            response = requests.request("GET", url, headers=self.headers)
+            response = requests.request("GET", url, headers=self.headers, timeout=60)
             if response.status_code == 404:  # not found
                 return ""
             contents = response.text.encode('utf-8')
@@ -244,7 +244,7 @@ class BitbucketServerProvider(GitProvider):
         }
 
         try:
-            requests.post(url=self._get_pr_comments_url(), json=payload, headers=self.headers).raise_for_status()
+            requests.post(url=self._get_pr_comments_url(), json=payload, headers=self.headers, timeout=60).raise_for_status()
         except Exception as e:
             get_logger().error(f"Failed to publish inline comment to '{file}' at line {from_line}, error: {e}")
             raise e
