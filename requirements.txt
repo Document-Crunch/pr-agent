@@ -31,3 +31,4 @@ gunicorn==20.1.0
 # lancedb==0.5.1
 # uncomment this to support language LangChainOpenAIHandler
 # langchain==0.0.349
+security==1.3.1
