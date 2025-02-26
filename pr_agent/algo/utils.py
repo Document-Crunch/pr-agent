@@ -17,7 +17,6 @@ from importlib.metadata import PackageNotFoundError, version
 from typing import Any, List, Tuple
 
 import html2text
-import requests
 import yaml
 from pydantic import BaseModel
 from starlette_context import context
@@ -28,6 +27,7 @@ from pr_agent.algo.token_handler import TokenEncoder
 from pr_agent.algo.types import FilePatchInfo
 from pr_agent.config_loader import get_settings, global_settings
 from pr_agent.log import get_logger
+from security import safe_requests
 
 
 def get_weak_model() -> str:
@@ -1012,7 +1012,7 @@ def get_rate_limit_status(github_token) -> dict:
         "Authorization": f"token {github_token}"
     }
 
-    response = requests.get(RATE_LIMIT_URL, headers=HEADERS)
+    response = safe_requests.get(RATE_LIMIT_URL, headers=HEADERS)
     try:
         rate_limit_info = response.json()
         if rate_limit_info.get('message') == 'Rate limiting is not enabled.':  # for github enterprise
@@ -1020,7 +1020,7 @@ def get_rate_limit_status(github_token) -> dict:
         response.raise_for_status()  # Check for HTTP errors
     except:  # retry
         time.sleep(0.1)
-        response = requests.get(RATE_LIMIT_URL, headers=HEADERS)
+        response = safe_requests.get(RATE_LIMIT_URL, headers=HEADERS)
         return response.json()
     return rate_limit_info
 
